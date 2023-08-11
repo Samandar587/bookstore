@@ -28,6 +28,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CartItemSerializer(serializers.Serializer):
+    book = BookSerializer()
     class Meta:
         model = CartItem
         fields = '__all__'

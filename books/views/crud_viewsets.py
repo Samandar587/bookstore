@@ -87,8 +87,11 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def remove_from_cart(self, request, pk=None):
         try:
             cart_item = CartItem.objects.get(pk=pk, user=request.user)
+            cart_item_id = cart_item.id
             cart_item.delete()
-            return Response(status=204)
+            return Response({'detail':f"Item with id {cart_item_id} successfully removed"}, status=204)
         except CartItem.DoesNotExist:
             return Response({'detail':'Cart Item is not found.'}, status=404)
+        
+
 
