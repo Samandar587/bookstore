@@ -1,4 +1,4 @@
-from books.models import Author, Book, UserProfile
+from books.models import Author, Book, UserProfile, CartItem
 from rest_framework import serializers
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -25,4 +25,9 @@ class BookSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
+        fields = '__all__'
+
+class CartItemSerializer(serializers.Serializer):
+    class Meta:
+        model = CartItem
         fields = '__all__'

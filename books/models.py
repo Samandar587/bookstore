@@ -32,6 +32,7 @@ class Book(models.Model):
     category = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     pub_date = models.DateField()
+    quantity = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -42,3 +43,12 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'book')
