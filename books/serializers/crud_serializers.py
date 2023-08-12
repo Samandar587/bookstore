@@ -1,4 +1,4 @@
-from books.models import Author, Book, UserProfile, CartItem
+from books.models import Author, Book, UserProfile, CartItem, Order
 from rest_framework import serializers
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -27,8 +27,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
 
-class CartItemSerializer(serializers.Serializer):
+class CartItemSerializer(serializers.ModelSerializer):
     book = BookSerializer()
     class Meta:
         model = CartItem
-        fields = '__all__'
+        fields = ['id', 'book', 'quantity', 'created_at']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = ['items', 'status', 'total_price', 'created_at']

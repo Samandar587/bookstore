@@ -1,8 +1,8 @@
-from books.serializers.crud_serializers import AuthorSerializer, BookSerializer, CartItemSerializer
+from books.serializers.crud_serializers import AuthorSerializer, BookSerializer, CartItemSerializer, OrderSerializer
 from rest_framework import viewsets, status, filters
-from books.models import Author, Book, CartItem
+from books.models import Author, Book, CartItem, Order
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from books.utils import is_book_available
@@ -64,22 +64,16 @@ class CartItemViewSet(viewsets.ModelViewSet):
         book_id = request.data.get('book_id')
         quantity = request.data.get('quantity', 1)
 
-        print(f"Trying to add book {book_id} to cart for user {request.user}")
-
         if not is_book_available(book_id, quantity):
-            print(f"Book {book_id} is not available in the requested quantity.")
+            
             return Response({'detail':'Book is not available in the requested quantity.'}, status=status.HTTP_400_BAD_REQUEST)
         
         cart_item, created = CartItem.objects.get_or_create(user=request.user, book_id=book_id)
-        print(cart_item)
-        print()
-        if not created:
-            print('not created')
-            cart_item.quantity += quantity
-            cart_item.save()
+            
+        cart_item.quantity += quantity
+        cart_item.save()
 
         serializer = self.get_serializer(cart_item)
-        print(serializer.data)
         return Response(serializer.data)
         
     
@@ -93,5 +87,32 @@ class CartItemViewSet(viewsets.ModelViewSet):
         except CartItem.DoesNotExist:
             return Response({'detail':'Cart Item is not found.'}, status=404)
         
+    @action(detail=False, methods=['GET'])
+    def get_cart(self, request):
+        cart_item = CartItem.objects.all()
+        serializer = self.get_serializer(cart_item, many=True)
+        return Response(serializer.data)
+        
 
+@api_view(['POST'])
+def checkout(request):
+    if request.method == 'POST':
+        cart_items = CartItem.objects.filter(user=request.user)
 
+        total_price = sum(item.book.price * item.quantity for item in cart_items)
+
+        order= Order.objects.create(user=request.user, total_price=total_price)
+        new_cart_items = cart_items
+        order.items.set(new_cart_items)
+
+        order_items = list(cart_items)
+
+        serializer = OrderSerializer(order)
+        response_data = serializer.data
+
+        cart_items.delete()
+
+        cart_serializer = CartItemSerializer(order_items, many=True)
+        response_data['items'] = cart_serializer.data
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
