@@ -27,12 +27,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
 
-<<<<<<< HEAD
 class CartItemSerializer(serializers.ModelSerializer):
     book = BookSerializer()
-=======
-class CartItemSerializer(serializers.Serializer):
->>>>>>> parent of 6b3e502 (small changes in shopping cart)
+
     class Meta:
         model = CartItem
         fields = ['id', 'book', 'quantity', 'created_at']
