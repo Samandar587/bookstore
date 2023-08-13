@@ -6,6 +6,7 @@ from rest_framework.decorators import action, api_view
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from books.utils import is_book_available
+from django.db import transaction
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
@@ -98,12 +99,22 @@ class CartItemViewSet(viewsets.ModelViewSet):
 def checkout(request):
     if request.method == 'POST':
         cart_items = CartItem.objects.filter(user=request.user)
+        print('cart_items')
 
         total_price = sum(item.book.price * item.quantity for item in cart_items)
 
         order= Order.objects.create(user=request.user, total_price=total_price)
-        new_cart_items = cart_items
-        order.items.set(new_cart_items)
+        print('order')
+        for item in cart_items:
+            book = item.book
+            if book.quantity >= item.quantity:
+                book.quantity -= item.quantity
+                book.save()
+            else:
+                return Response({'detail': f'Insufficient books in stock for {book.title}'})
+        print('above items.add')
+        order.items.set(cart_items)
+        print('below items.add')
 
         order_items = list(cart_items)
 
@@ -116,3 +127,6 @@ def checkout(request):
         response_data['items'] = cart_serializer.data
         
         return Response(response_data, status=status.HTTP_201_CREATED)
+    
+
+
