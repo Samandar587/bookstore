@@ -1,11 +1,8 @@
 from .models import Book
 
-def is_book_available(book_id, quantity):
+def is_book_available(book_id, quantity, cart_id):
     try:
         book = Book.objects.get(pk=book_id)
-        print('working')
-        print(book.quantity)
-        print('given quantity', quantity)
         return book.quantity >= quantity
     except Book.DoesNotExist:
         return False
