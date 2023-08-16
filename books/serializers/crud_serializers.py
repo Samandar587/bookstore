@@ -29,6 +29,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     book = BookSerializer()
+    def create(self, validated_data):
+        book_data = validated_data.pop('book')
+        book, _ = Book.objects.get_or_create(**book_data)
+        cart_item = CartItem.objects.create(book=book, **validated_data)
+        return cart_item
 
     class Meta:
         model = CartItem
@@ -36,6 +41,12 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True)
+
+    def create(self, validated_data):
+        book_data = validated_data.pop('items')
+        book = Book.objects.create(**book_data)
+        cart_item = CartItem.objects.create(book=book, **validated_data)
+
     class Meta:
         model = Order
         fields = ['items', 'status', 'total_price', 'created_at']

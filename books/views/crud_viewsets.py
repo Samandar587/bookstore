@@ -32,7 +32,7 @@ class BookViewSet(viewsets.ModelViewSet):
             book_serializer = self.get_serializer(data=book_data)
             if book_serializer.is_valid():
 
-                print('23234')
+
                 self.perform_create(book_serializer)
                 return Response(book_serializer.data, status=status.HTTP_201_CREATED)
             else:
@@ -52,7 +52,7 @@ class BookViewSet(viewsets.ModelViewSet):
                 Q(title__icontains=query) | Q(author__name__icontains=query)
                 )
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 
 class CartItemViewSet(viewsets.ModelViewSet):
@@ -86,7 +86,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
             cart_item.delete()
             return Response({'detail':f"Item with id {cart_item_id} successfully removed"}, status=204)
         except CartItem.DoesNotExist:
-            return Response({'detail':'Cart Item is not found.'}, status=404)
+            return Response({'detail':'Cart Item is not found.'}, status=status.HTTP_404_NOT_FOUND)
         
     @action(detail=False, methods=['GET'])
     def get_cart(self, request):
@@ -99,12 +99,11 @@ class CartItemViewSet(viewsets.ModelViewSet):
 def checkout(request):
     if request.method == 'POST':
         cart_items = CartItem.objects.filter(user=request.user)
-        print('cart_items')
+
 
         total_price = sum(item.book.price * item.quantity for item in cart_items)
 
         order= Order.objects.create(user=request.user, total_price=total_price)
-        print('order')
         for item in cart_items:
             book = item.book
             if book.quantity >= item.quantity:
@@ -112,9 +111,9 @@ def checkout(request):
                 book.save()
             else:
                 return Response({'detail': f'Insufficient books in stock for {book.title}'})
-        print('above items.add')
+
         order.items.set(cart_items)
-        print('below items.add')
+
 
         order_items = list(cart_items)
 
