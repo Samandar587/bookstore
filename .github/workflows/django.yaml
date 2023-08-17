@@ -25,6 +25,8 @@ jobs:
     - name: Set up environment variables
       env:
         DJANGO_SETTINGS_MODULE: bookstore.settings
+      run: |
+        echo "DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}" >> $GITHUB_ENV
     - name: Coverage report
       run: |
         pip install coverage
