@@ -107,6 +107,14 @@ DATABASES = {
     }
 }
 
+# Define the test database prefix
+TEST_DATABASE_PREFIX = 'test_'
+
+# Modify the test database configuration
+DATABASES['default']['TEST'] = {
+    'NAME': TEST_DATABASE_PREFIX + DATABASES['default']['NAME'],
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
