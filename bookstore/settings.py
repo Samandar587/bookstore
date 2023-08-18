@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os, datetime
 
 load_dotenv()
-DB_NAME=os.environ.get("POSTGRES_NAME")
+DB_NAME=os.environ.get("POSTGRES_DB")
 DB_USER=os.environ.get("POSTGRES_USER")
 DB_PASSWORD=os.environ.get("POSTGRES_PASSWORD")
 DB_HOST=os.environ.get("POSTGRES_HOST")
