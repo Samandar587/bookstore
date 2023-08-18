@@ -4,10 +4,10 @@ import os, datetime
 
 load_dotenv()
 DB_NAME=os.environ.get("DB_NAME", "bookstore")
-DB_USER=os.environ.get("DB_USER")
-DB_PASSWORD=os.environ.get("DB_PASSWORD")
-DB_HOST=os.environ.get("DB_HOST")
-DB_PORT=os.environ.get("DB_PORT")
+DB_USER=os.environ.get("DB_USER", "postgres")
+DB_PASSWORD=os.environ.get("DB_PASSWORD", "postgres")
+DB_HOST=os.environ.get("DB_HOST", "db")
+DB_PORT=os.environ.get("DB_PORT", 5432)
 
 AUTH_USER_MODEL = "books.User"
 
