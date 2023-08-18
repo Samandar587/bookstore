@@ -11,10 +11,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Docker test
       run: |
         docker image pull debian:latest
+    - name: Docker build
+      run: |
+        docker compose up -d
+    - name: enter container
+      run: |
+        docker compose exec -it web bash
+    - name: run it
+      run: |
+        python3 manage.py test books.tests.test_models books.tests.test_serializers books.tests.test_viewsets
