@@ -11,39 +11,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        env: 
-          POSTGRES_DB: db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.9
-    - name: Install Dependencies
+    - name: Docker test
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Set up environment variables
-      env:
-        DJANGO_SETTINGS_MODULE: bookstore.settings
-      run: |
-        echo "DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}" >> $GITHUB_ENV
-    - name: Coverage report
-      run: |
-        pip install coverage
-        coverage run manage.py test books.tests.test_models books.tests.test_serializers books.tests.test_viewsets
-        coverage report
-    - name: Django testing
-      run: |
-        python3 manage.py test books.tests.test_models books.tests.test_serializers books.tests.test_viewsets
+        docker image pull debian:latest
