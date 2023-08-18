@@ -25,4 +25,4 @@ jobs:
         
     - name: Run tests in container
       run: |
-        docker-compose exec web python3 manage.py test books.tests.test_models books.tests.test_serializers books.tests.test_viewsets
+        docker-compose exec -T web python3 manage.py test books.tests.test_models books.tests.test_serializers books.tests.test_viewsets
