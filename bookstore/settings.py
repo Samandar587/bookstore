@@ -114,7 +114,7 @@ TEST_DATABASE_PREFIX = 'test_'
 DATABASES['default']['TEST'] = {
     'NAME': TEST_DATABASE_PREFIX + DATABASES['default']['NAME'],
 }
-print(DATABASES['default']['NAME'])
+print(DATABASES['default']['TEST'])
 print(TEST_DATABASE_PREFIX)
 
 
